@@ -233,7 +233,7 @@ int insertMarketStockInteractive() {
     }
     clearInputBuffer();
     
-    // Convert to uppercase for consistency
+    
     toUpperStr(symbol);
     
     // Check if already exists
@@ -253,7 +253,7 @@ int insertMarketStockInteractive() {
     printf("Enter sector: ");
     fgets(sector, MAX_SECTOR_LEN, stdin);
     toUpperStr(sector);
-    sector[strcspn(sector, "\n")] = '\0';  // Remove newline
+    sector[strcspn(sector, "\n")] = '\0';  
     
     printf("Enter current price: ");
     if (scanf("%lf", &price) != 1 || price <= 0) {
@@ -278,6 +278,7 @@ int insertMarketStockInteractive() {
     
     printf("Stock %s %s at price %.2f\n", 
            found ? "updated" : "added", symbol, price);
+    saveMarketToFile(MARKET_FILE);       
     return 1;
 }
 
@@ -518,6 +519,8 @@ int loadMarketFromFile(const char *filename) {
     while (fscanf(fp, "%15s %19s %lf", symbol, sector, &price) == 3) {
         // Convert symbol to uppercase
         toUpperStr(symbol);
+        toUpperStr(sector);
+
         
         int found = 0;
         int slot = findMarketSlot(symbol, &found);
@@ -751,6 +754,9 @@ int buyStockInteractive() {
 
         printf("Bought %d of %s at %.2f. Holding created.\n", qty, symbol, buyPrice);
     }
+    saveHoldingsToFile(USER_FILE);
+    saveTransactionsToFile(TRANSACTION_FILE);
+
 
     return 1;
 }
@@ -830,6 +836,9 @@ int sellStockInteractive() {
         printf("Remaining quantity of %s: %d\n",
                symbol, holdingTable[slot].quantity);
     }
+    saveHoldingsToFile(USER_FILE);
+    saveTransactionsToFile(TRANSACTION_FILE);
+
 
     return 1;
 }
@@ -1118,10 +1127,6 @@ void userMenu() {
         printf("9. Display All Stocks\n");
         printf("10. Insert/Update Market Stock\n");  // NEW
         printf("11. Show Market Statistics\n");
-        printf("12. Save Portfolio\n");
-        printf("13. Load Portfolio\n");
-        printf("14. Save Market Data\n");
-        printf("15. Load Market Data\n");
         printf("0. Exit\n");
         printf("Enter choice: ");
         
@@ -1165,34 +1170,6 @@ void userMenu() {
                 break;
             case 11:
                 showMarketStatistics();
-                break;
-            case 12:
-                if (saveHoldingsToFile(USER_FILE)) {
-                    printf("Portfolio saved successfully.\n");
-                } else {
-                    printf("Failed to save portfolio.\n");
-                }
-                break;
-            case 13:
-                if (loadHoldingsFromFile(USER_FILE)) {
-                    printf("Portfolio loaded successfully.\n");
-                } else {
-                    printf("Failed to load portfolio.\n");
-                }
-                break;
-            case 14:
-                if (saveMarketToFile(MARKET_FILE)) {
-                    printf("Market data saved successfully.\n");
-                } else {
-                    printf("Failed to save market data.\n");
-                }
-                break;
-            case 15:
-                if (loadMarketFromFile(MARKET_FILE)) {
-                    printf("Market data loaded successfully.\n");
-                } else {
-                    printf("Failed to load market data.\n");
-                }
                 break;
             case 0:
                 printf("Saving data and exiting...\n");

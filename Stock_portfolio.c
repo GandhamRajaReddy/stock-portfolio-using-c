@@ -219,7 +219,7 @@ int searchMarketStockExact(const char *symbolRaw, double *priceOut, char *sector
     return 0;
 }
 
-// NEW: Insert market stock
+//Insert market stock
 int insertMarketStockInteractive() {
     char symbol[MAX_SYMBOL_LEN];
     char sector[MAX_SECTOR_LEN];
